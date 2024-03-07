@@ -1,0 +1,547 @@
+\documentclass[11pt,onecolumn]{article}
+\usepackage{amssymb, amsmath, amsthm,graphicx, paralist,algpseudocode,algorithm,cancel,url,color}
+\usepackage{sectsty}
+\usepackage{fancyvrb}
+\usepackage{mathrsfs}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+% \usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+\usepackage{listings}
+\usepackage{enumitem}
+
+\newcommand{\bvec}[1]{\mathbf{#1}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Rn}{\R^{n\times n}}
+\newcommand{\Rmn}{\R^{m\times n}}
+\newcommand{\Cn}{\C^{n\times n}}
+\newcommand{\Cmn}{\C^{m\times n}}
+\newcommand{\cO}{\mathcal{O}}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\trace}{trace}
+\DeclareMathOperator{\diag}{diag}
+\sectionfont{\Large\sc}
+\subsectionfont{\sc}
+\usepackage[margin=1 in]{geometry}
+\begin{document}
+\noindent
+\textsc{\Large Numerical analysis: Homework 1}\\
+Instructor: Anil Damle\\
+Due: February 5, 2024\\
+
+\subsection*{Policies}
+You may discuss the homework problems freely with other students, but please
+refrain from looking at their code or writeups (or sharing your own).
+Ultimately, you must implement your own code and write up your own solution to
+be turned in. Your solution, including plots and requested output from your code
+should be typeset and submitted via the Gradescope as a pdf file. This file must be self contained for grading. Additionally, please
+submit any code written for the assignment as zip
+file to the separate Gradescope assignment for code.\\
+\hrule
+\vspace{1cm}
+\noindent
+
+\subsection*{Question 1:}
+Suppose $A,B\in \R^{n\times n}$ are general square matrices, $D\in\R^{n\times n}$ is a diagonal matrix, and $u,v\in\R^n$ are vectors of length $n.$ For the following mathematical expressions: determine an optimal way to compute them (in terms of complexity in $n$, i.e., the number of required basic arithmetic operations for a given $n$). Give the complexity and explain your reasoning (you need not prove ``lower bounds''), implement your procedure, demonstrate that your code scales correctly by timing your code as $n$ is increased and providing corroborating evidence (a sufficiently clear plot will suffice). You may reorder and modify the expressions in any way you choose, so long as the result remains mathematically equivalent to the given statement.
+\begin{enumerate}[label=(\alph*)]
+\item $\Tr(D+uv^T)$
+\item $uv^TA$
+\item $(I+uu^T)v$
+\item $v^TABu$
+\end{enumerate}
+
+\noindent
+In the preceding parts we considered ``reordering'' computations to achieve an asymptotically different runtime. Now we will consider something more practical, how various optimizations in numerical codes (and their interface with hardware) impact the practical runtime of a common operation: matrix multiplication. Write code that implements computing the product of two matrices in the following ways:
+\begin{enumerate}[label=(\alph*)]
+\setcounter{enumi}{4}
+\item $C(i,j) = \sum_k A(i,k)B(k,j);$ for this part you can only use built in scalar multiplication
+\item $C(:,i) = A(B(:,i));$ you may now leverage your chosen languages calls to compute matrix-vector products.
+\item As a point of comparison we will also use the ``built in'' routine for computing matrix-matrix multiplication (e.g., simply writing $C=A^*B$ in Matlab), this is our way of accessing the routine for matrix-matrix multiplication from BLAS (\url{http://www.netlib.org/blas/}). 
+\end{enumerate}
+
+\noindent
+For all the above algorithms clearly illustrate that your implementation is $\cO\left(n^3\right)$, compare and contrast their performance (again, a clear plot will help here). Argue about why you believe you might be seeing such differences. \\
+
+\noindent
+\textbf{Remarks:} Up to constants, we expect the arithmetic complexity of the above computations, and hence the time taken for sufficiently large $n,$ to behave like $n^q$ for some non-negative $q.$ When you are construing your plots think carefully about how you can generate a plot where the slope of the corresponding line can be used to determine/estimate $q.$ Here is a quick hint: simply plotting $t(n),$ the time taken, vs $n$ does not have this property and is not an easy way to distinguish between various complexities. Is something like $\log(t(n))$ vs $\log(n)$ a better choice? How would different exponents manifest in this case? Lastly, for a given $n$ run your timing experiment multiple times\textemdash how consistent are the measurements? What are the potential implications of this and are there ways to mitigate them?
+
+
+\subsection*{Question 2:}
+For this problem, let $A\in \R^{n \times n}$ be a square matrix and $x\in\R^n$ be a vector of length $n.$ Prove the following:
+\begin{enumerate}
+\item $\|x\|_{\infty} \leq \|x\|_2 \leq \sqrt{n}\|x\|_{\infty}$
+
+\textbf{Solution:}
+\begin{align*}
+\|x\|_{\infty} &= \max |x_i| = |x_a| \quad \text{for some } a, \\
+\|x\|_{2} &= \sqrt{\sum_{i=1}^n x_i^2}.
+\end{align*}
+
+Since $\|x\|_{\infty}$ is the maximum absolute value among all elements of $x$, for each term in the vector $x$, we have:
+
+\[
+|x_i| \leq \|x\|_{\infty} = |x_a| \quad \forall i \in \{1, \ldots, n\}.
+\]
+
+Squaring both sides of the inequality, we get:
+
+\[
+x_i^2 \leq x_a^2 \quad \forall i \in \{1, \ldots, n\}.
+\]
+
+Summing this inequality over all $i$ gives us:
+
+\[
+\sum_{i=1}^n x_i^2 \leq \sum_{i=1}^n x_a^2 = n \cdot x_a^2.
+\]
+
+Taking the square root on both sides, we have:
+
+\[
+\sqrt{\sum_{i=1}^n x_i^2} \leq \sqrt{n \cdot x_a^2} = \sqrt{n} \cdot |x_a|.
+\]
+
+Since \( |x_a| = \|x\|_{\infty} \), this simplifies to:
+
+\[
+\|x\|_{2} \leq \sqrt{n} \cdot \|x\|_{\infty}.
+\]
+
+On the other hand, for the leftmost inequality, we focus on the fact that the square of the infinity norm is less than or equal to the sum of the squares of all components, which is due to the definition of the infinity norm being the largest component:
+
+\[
+|x_a|^2 \leq \sum_{i=1}^n x_i^2.
+\]
+
+Taking the square root on both sides, we obtain:
+
+\[
+|x_a| \leq \sqrt{\sum_{i=1}^n x_i^2} = \|x\|_{2}.
+\]
+
+Since \( |x_a| \) was chosen as the maximum absolute value of the components of \( x \) (i.e., \( \|x\|_{\infty} \)), this shows that:
+
+\[
+\|x\|_{\infty} \leq \|x\|_{2}.
+\]
+
+Combining the results, we conclude:
+
+\[
+\|x\|_{\infty} \leq \|x\|_{2} \leq \sqrt{n} \cdot \|x\|_{\infty}.
+\]
+
+Thus, both parts of the inequality are proven.
+
+
+
+
+
+
+
+
+
+
+
+    
+\item $\|A\|_2 \leq \sqrt{n}\|A\|_{\infty}$
+
+\textbf{Solution:}
+
+By definition, the 2-norm of a matrix \( A \), denoted as \( \|A\|_2 \), is the maximum value of $||Ax||_{2}$ for some $x$. The infinity norm, \( \|A\|_{\infty} \), is the maximum absolute row sum of the matrix. We need to show that \( \|A\|_2 \leq \sqrt{n} \|A\|_{\infty} \).
+
+First, let us express \( \|A\|_{\infty} \) and \( \|A\|_2 \) as:
+
+\[
+\|A\|_{\infty} = \max_{\|x\|_{\infty}=1} \|Ax\|_{\infty},
+\]
+\[
+\|A\|_2 = \max_{\|x\|_2=1} \|Ax\|_2.
+\]
+
+Given a vector \( x \in \mathbb{R}^n \), let \( Ax = y \). From part a, we have shown that for any vector \( y \in \mathbb{R}^n \):
+
+\[
+\|y\|_2 \leq \sqrt{n} \|y\|_{\infty}.
+\]
+
+Let's recall the inequality proven in part a (which we will refer to as equation (1)):
+\[
+\|y\|_2 \leq \sqrt{n} \|y\|_{\infty}.
+\]
+
+\textbf{Step 1:} Consider a vector \( x_1 \in \mathbb{R}^n \) such that \( \|x_1\|_2 = 1 \) and this \( x_1 \) maximizes \( \|Ax\|_2 \) over all \( x \) with \( \|x\|_2 = 1 \). We can write:
+\[
+\|Ax_1\|_2 \leq \sqrt{n} \|Ax_1\|_{\infty} \quad \text{(from equation (1))}.
+\]
+Since \( x_1 \) maximizes \( \|Ax\|_2 \), we have \( \|A\|_2 = \|Ax_1\|_2 \).
+
+\textbf{Step 2:} Now, let \( x_2 \in \mathbb{R}^n \) be such that \( \|x_2\|_{\infty} = 1 \) and this \( x_2 \) maximizes \( \|Ax\|_{\infty} \) over all \( x \) with \( \|x\|_{\infty} = 1 \). Applying equation (1) again, we have:
+\[
+\|Ax_2\|_2 \leq \sqrt{n} \|Ax_2\|_{\infty}.
+\]
+Since \( x_2 \) maximizes \( \|Ax\|_{\infty} \), we have \( \|A\|_{\infty} = \|Ax_2\|_{\infty} \).
+
+From the properties of norms, we also know that for any vector \( y \), \( \|y\|_2 \leq \|y\|_{\infty} \). Therefore, we have:
+\[
+\|Ax_2\|_2 \leq \|Ax_1\|_2.
+\]
+
+Combining the above inequalities, we get:
+\[
+\|Ax_2\|_2 \leq \|Ax_1\|_2 \leq \sqrt{n} \|Ax_1\|_{\infty} \leq \sqrt{n} \|Ax_2\|_{\infty}.
+\]
+
+By the definitions of the matrix norms, we have:
+\[
+\|A\|_2 = \|Ax_1\|_2 \quad \text{and} \quad \|A\|_{\infty} = \|Ax_2\|_{\infty}.
+\]
+
+Substituting these into our inequality, we obtain:
+\[
+\|A\|_2 \leq \sqrt{n} \|A\|_{\infty}.
+\]
+
+This completes the proof that the 2-norm of matrix \( A \) is less than or equal to \( \sqrt{n} \) times the infinity norm of \( A \). Q.E.D.
+
+
+
+
+
+
+\item For any orthogonal matrix $Q\in \R^{n\times n}:$ $\|Qx\|_2 = \|x\|_2.$
+
+
+\textbf{Solution:}
+
+
+
+
+\textbf{Solution for part 3:}
+
+To show that for any orthogonal matrix \( Q \in \mathbb{R}^{n \times n} \), the 2-norm of \( Qx \) is equal to the 2-norm of \( x \), we proceed as follows:
+
+Given that \( Q \) is an orthogonal matrix, one of its key properties is that the transpose of \( Q \), denoted by \( Q^T \), is also its inverse. That is, \( Q^T Q = I \), where \( I \) is the identity matrix.
+
+The 2-norm of a vector \( x \), denoted by \( \|x\|_2 \), is defined as the square root of the sum of the squares of its components. This can be represented in matrix form as \( \|x\|_2 = \sqrt{x^T x} \).
+
+Now, consider the 2-norm of the vector \( Qx \):
+
+\[
+\|Qx\|_2 = \sqrt{(Qx)^T(Qx)}.
+\]
+
+By the property of transposition of a product of matrices, we have:
+
+\[
+(Qx)^T = x^T Q^T.
+\]
+
+Substituting this into our expression for \( \|Qx\|_2 \), we get:
+
+\[
+\|Qx\|_2 = \sqrt{x^T Q^T Qx}.
+\]
+
+Using the property of orthogonal matrices \( Q^T Q = I \), this simplifies to:
+
+\[
+\|Qx\|_2 = \sqrt{x^T I x}.
+\]
+
+The property of the identity matrix is such that \( Ix = x \). Therefore, we can further simplify the expression:
+
+\[
+\|Qx\|_2 = \sqrt{x^T x}.
+\]
+
+Recognizing that the right side of the equation is the definition of the 2-norm of \( x \), we finally have:
+
+\[
+\|Qx\|_2 = \|x\|_2.
+\]
+
+This proves that the 2-norm of a vector is invariant under orthogonal transformations. Q.E.D.
+
+
+
+
+
+\item $\|A\|_2 = \sigma_{\max},$ where $\sigma_{\max}$ is the largest singular value of $A.$
+\item For any orthogonal matrix $Q\in \R^{n\times n}:$ $\|QA\|_2 = \|A\|_2.$
+
+
+
+\textbf{Solution:}
+
+\begin{align*}
+\|QA\|_{2} &= \|A\|_{2}, \\
+\|QA\|_{2} &= \max_{\|x\|_{2}=1} \|QAx\|_{2}, \\
+&= \max_{\|x\|_{2}=1} \sqrt{(QAx)^T(QAx)}, \\
+&= \max_{\|x\|_{2}=1} \sqrt{(x^T A^T Q^T QAx)}, \\
+&= \max_{\|x\|_{2}=1} \sqrt{(x^T A^T A x)}, \\
+&= \max_{\|x\|_{2}=1} \|Ax\|_{2}, \\
+&= \|A\|_{2}. \quad \text{(Q.E.D.)}
+\end{align*}
+
+
+
+
+
+
+\end{enumerate}
+
+\subsection*{Question 3:}
+For this problem, let $V\in \R^{m \times n}$ with $m > n$ be a matrix with linearly independent columns, prove that
+\begin{enumerate}
+\item $V^TV$ is positive definite
+\item $VV^T$ is positive semi-definite but not positive definite
+\end{enumerate}
+
+\textbf{Solution:} First, I will state some properties of the given matrix $V$. If $m > n$ and all the columns are linearly independent that it means that the rank is $n$.
+
+Hence, by definition of Singular Value Decomposition, there must be $n$ non-zero singular values. Let's denote the singular values as 
+\begin{align*}    
+\sigma_1, \sigma_2, \ldots, \sigma_n.
+\end{align*}
+
+The matrix $V$ can be decomposed as $V = U\Sigma W^T$, where $U$ and $W$ are orthogonal matrices and $\Sigma$ is a diagonal matrix with the singular values on the diagonal.
+
+Here, $U$ and $W$ are square matrices of size $m$ and $n$ respectively. The matrix $U$ is of size $m \times m$ and $W$ is of size $n \times n$.
+
+\begin{enumerate}
+    \item \textbf{Proof for part 1:}
+    
+    We need to show that $V^TV$ is positive definite. The matrix $V^TV$ is of size $n \times n$. Let's denote it as $A = V^TV$.
+    
+    We can express $A$ as:
+    \begin{align*}
+        A = V^TV = (U\Sigma W^T)^T(U\Sigma W^T) = W\Sigma^T U^T U\Sigma W^T = W\Sigma^T \Sigma W^T.
+    \end{align*}
+    
+    Since $W$ is an orthogonal matrix, $W^T = W^{-1}$. Therefore, we can simplify the expression for $A$ as:
+    \begin{align*}
+        A = W\Sigma^T \Sigma W^T = W\Sigma^T \Sigma W^{-1}.
+    \end{align*}
+    
+    Let's denote $\Sigma^T \Sigma$ as $\Lambda$. Then, we can express $A$ as:
+    \begin{align*}
+        A = W\Lambda W^{-1}.
+    \end{align*}
+    
+    We know that $\Sigma$ has $n$ non-zero value on the diagonal. Hence, $\Sigma^T \Sigma$ is an $n \times n$ diagonal matrix with $n$ non-zero values on the diagonal (the squares of the singular values). This means that $\Lambda$ is diagonal matrix with $n$ postive values on the diagonal.
+
+    We also know that $W$ is an orthogonal matrix. Hence, $W^{-1} = W^T$.
+
+    Therefore, $\forall x \in \R^n$, we have:
+
+    \begin{align*}
+        x^TAx &= x^T W\Lambda W^T x \\
+        &= (W^T x)^T \Lambda (W^T x) \\
+    \end{align*}
+
+    Let's denote $y = W^T x$. Then, we have:
+
+    \begin{align*}
+        x^TAx &= y^T \Lambda y.
+    \end{align*}
+
+    We can expand the expression for $y^T \Lambda y$ as:
+
+    \begin{align*}
+        y^T \Lambda y &= \sum_{i=1}^n \lambda_i y_i^2.
+    \end{align*}
+
+    Since $\Lambda$ is a diagonal matrix with $n$ positive values on the diagonal, we have:
+
+    \begin{align*}
+        \lambda_i y_i^2 &> 0 \quad \forall i \in \{1, \ldots, n\}.
+    \end{align*}
+
+    This means that the sum of the terms in the expansion of $y^T \Lambda y$ is positive. Hence, we have:
+
+    \begin{align*}
+        y^T \Lambda y &> 0.
+    \end{align*}
+
+    Since $y^T \Lambda y = x^TAx$, we have:
+
+    \begin{align*}
+        x^TAx &> 0 \quad \forall x \in \R^n.
+    \end{align*}
+
+    This means that $A$ is positive definite. Q.E.D.
+    
+    \item \textbf{Proof for part 2:}
+    
+    We need to show that $VV^T$ is positive semi-definite but not positive definite. The matrix $VV^T$ is of size $m \times m$. Let's denote it as $B = VV^T$.
+    
+    We can express $B$ as:
+    \begin{align*}
+        B = VV^T = (U\Sigma W^T)(U\Sigma W^T)^T = U\Sigma W^T W \Sigma^T U^T = U\Sigma \Sigma^T U^T.
+    \end{align*}
+
+    Let's denote $\Sigma \Sigma^T$ as $\Lambda$. Then, we can express $B$ as:
+    \begin{align*}
+        B = U\Lambda U^T.
+    \end{align*}
+
+    We know that $\Sigma$ has $n$ non-zero value on the diagonal. Hence, $\Sigma \Sigma^T$ is an $m \times m$ diagonal matrix with the first $n$ non-zero values on the diagonal (the squares of the singular values) with the rest of the diagonal entires being zero. This means that $\Lambda$ is diagonal matrix with $n$ postive values on the diagonal and the rest of the diagonal entires being zero.
+
+    Therefore, $\forall x \in \R^m$, we have:
+
+    \begin{align*}
+        x^TBx &= x^T U\Lambda U^T x \\
+        &= (U^T x)^T \Lambda (U^T x) \\
+    \end{align*}
+
+    Let's denote $y = U^T x$. Then, we have:
+
+    \begin{align*}
+        x^TBx &= y^T \Lambda y.
+    \end{align*}
+
+    We can expand the expression for $y^T \Lambda y$ as:
+
+    \begin{align*}
+        y^T \Lambda y &= \sum_{i=1}^n \lambda_i y_i^2.
+    \end{align*}
+
+    Since $\Lambda$ is a diagonal matrix with $n$ positive values on the diagonal and the rest of the diagonal entires being zero, we have:
+
+    \begin{align*}
+        \lambda_i y_i^2 &\geq 0 \quad \forall i \in \{1, \ldots, m\}.
+    \end{align*}
+    
+    It implies that the sum of all the terms in the expansion of $y^T \Lambda y$ is non-negative. Hence, we have:
+
+    \begin{align*}
+        y^T \Lambda y &\geq 0.
+    \end{align*}
+
+    Equality at \(y^T \Lambda y = 0\) is achieved when the first $n$ entries of \(y\) are zero.
+
+    Since $y^T \Lambda y = x^TBx$, we have:
+
+    \begin{align*}
+        x^TBx &\geq 0 \quad \forall x \in \R^m.
+    \end{align*}
+
+    Equality when the first $n$ entries of \(U^Tx\) are zero.
+    This means that $B$ is positive semi-definite.
+
+\end{enumerate}
+\subsection*{Question 4:}
+For differentiable functions $f(x),$ where the input $x$ may be a vector $x = (x_1, x_2,\ldots,x_n),$ we define the relative condition number $\kappa_{2}(x)$ of computing $f(x)$ at $x$ as
+\[
+\kappa_{2}(x) \equiv \frac{\|J(x)\|_{2}}{\|f(x)\|_{2}/\|x\|_{2}},
+\] 
+where $J$ is the Jacobian of $f.$
+\begin{enumerate}
+\item Compute $\kappa_{2}(x)$ for subtraction, \emph{i.e.} $f(x) = x_1 - x_2.$ When, if ever, is this an ill-conditioned problem?
+\item Compute $\kappa_{2}(x)$ for multiplication, \emph{i.e.} $f(x) = x_1x_2.$ When, if ever, is this an ill-conditioned problem?
+\end{enumerate}
+
+\begin{enumerate}
+    \item \textbf{Solution for part 1:}
+    To compute the relative condition number \( \kappa_{2}(x) \) for the subtraction function \( f(x) = x_1 - x_2 \), we need to compute the Jacobian of \( f \) at \( x \) and then use it to compute the condition number.
+
+    The Jacobian of \( f \) at \( x \) is a \( 1 \times 2 \) matrix, given by:
+    \begin{align}
+        J(x) = \begin{bmatrix}
+            \frac{\partial f}{\partial x_1} & \frac{\partial f}{\partial x_2}
+        \end{bmatrix}.\\
+        J(x) = \begin{bmatrix}
+            1 & -1
+        \end{bmatrix}.
+    \end{align}
+    Next, the 2-norm of the Jacobian matrix is given by:
+    \begin{align}
+        \|J(x)\|_2 = \sqrt{\sum_{i=1}^2 (J(x)_{1i})^2}.
+    \end{align}
+    Next, the 2-norm of the vector $x$ is gives as:
+    \begin{align}
+        \|x\|_2 = \sqrt{\sum_{i=1}^2 x_i^2}.
+    \end{align}
+    Finally,
+    \begin{align}
+        \|f(x)\| = |x_1 - x_2|.
+    \end{align}
+    Therefore, the relative condition number \( \kappa_{2}(x) \) is given by:
+    \begin{align}
+        \kappa_{2}(x) = \frac{\|J(x)\|_{2}}{\|f(x)\|_{2}/\|x\|_{2}} = \frac{\sqrt{1^2 + (-1)^2}}{|x_1 - x_2|/\sqrt{x_1^2 + x_2^2}} = \frac{\sqrt{2}}{|x_1 - x_2|/\sqrt{x_1^2 + x_2^2}}.
+    \end{align}
+    We know that function is ill-conditioned when \( \kappa_{2}(x) \) is large. This happens when the denominator is small. Therefore, the subtraction function is ill-conditioned when \( x_1 \) and \( x_2 \) are close to each other. In this case, the denominator is small and the relative condition number \( \kappa_{2}(x) \) is large.
+
+    \item \textbf{Solution for part 2:}
+    To compute the relative condition number \( \kappa_{2}(x) \) for the multiplication function \( f(x) = x_1x_2 \), we need to compute the Jacobian of \( f \) at \( x \) and then use it to compute the condition number.
+
+    The Jacobian of \( f \) at \( x \) is a \( 1 \times 2 \) matrix, given by:
+    \begin{align}
+        J(x) = \begin{bmatrix}
+            \frac{\partial f}{\partial x_1} & \frac{\partial f}{\partial x_2}
+        \end{bmatrix}.\\
+        J(x) = \begin{bmatrix}
+            x_2 & x_1
+        \end{bmatrix}.
+    \end{align}
+    Next, the 2-norm of the Jacobian matrix is given by:
+    \begin{align}
+        \|J(x)\|_2 = \sqrt{\sum_{i=1}^2 (J(x)_{1i})^2}.
+    \end{align}
+    Next, the 2-norm of the vector $x$ is gives as:
+    \begin{align}
+        \|x\|_2 = \sqrt{\sum_{i=1}^2 x_i^2}.
+    \end{align}
+    Finally,
+    \begin{align}
+        \|f(x)\| = |x_1x_2|.
+    \end{align}
+    Therefore, the relative condition number \( \kappa_{2}(x) \) is given by:
+    
+    \begin{align}
+        \kappa_{2}(x) = \frac{\|J(x)\|_{2}}{\|f(x)\|_{2}/\|x\|_{2}} = \frac{\sqrt{x_2^2 + x_1^2}}{|x_1x_2|/\sqrt{x_1^2 + x_2^2}} = \frac{\sqrt{x_2^2 + x_1^2}}{|x_1x_2|/\sqrt{x_1^2 + x_2^2}} = \frac{x_1^2 + x_2^2}{|x_1x_2|}.
+    \end{align}
+
+    The problem is ill-conditioned when \( \kappa_{2}(x) \) is large. This happens when the denominator is small and the numerator is large.
+
+    \implies $x_1^2 + x_2^2$ is large and $|x_1x_2|$ is small.
+
+    This could happend in a scenario where the numerator is way bigger than the denominator. If, for example, $x_1 >> x_2$ => $x_1^2 + x_2^2 \approx x_1^2$.
+    In that case, the limit  $\kappa_{2}(x) \to \infty$ as $\kappa_{2}(x) \to \frac{x_1^2}{|x_1x_2|} \to \infty$ when $|x_1| >> |x_2|$.
+
+
+\end{enumerate}
+
+% \subsection*{Question 5:}
+% When asked ``is it reasonable to compute $e^{-x}$ via its Taylor expansion'' GPT-4 responds:\footnote{See \url{https://chat.openai.com/share/dc160f6d-d73a-4729-94e5-ee16d409573c}, and remember that the output is random---you may get a different response if you ask the same question.}
+
+
+% \begin{quote}
+% Yes, it is reasonable to compute \(e^{-x}\) via its Taylor expansion. The Taylor series expansion of \(e^{-x}\) is:
+
+% \[e^{-x} = 1 - x + \frac{x^2}{2!} - \frac{x^3}{3!} + \frac{x^4}{4!} - \dotsb\]
+
+% This is an infinite series that converges for all values of \(x\), so you can use it to compute \(e^{-x}\) for any \(x\).
+
+% However, be aware of the limitations:
+
+% 1. \textbf{Precision}: The more terms you include in the series, the more accurate your result will be. However, if \(x\) is very large, you may need to sum a large number of terms to get an accurate result.
+
+% 2. \textbf{Efficiency}: If you are computing \(e^{-x}\) for very large values of \(x\), it may be more efficient to use other methods, such as computing \(e^x\) and then taking its reciprocal.
+
+% For small to moderate values of \(x\), computing \(e^{-x}\) via its Taylor expansion can be a reasonable and accurate method.
+% \end{quote}
+
+% \noindent
+% Let's ignore the efficiency part for a moment (as there are far better ways to compute $e^{-x}$ from that standpoint). Assuming we take enough terms, do you agree that for ``small to moderate values of $x$'' using the Taylor expansion provides an ``accurate'' result for $e^{-x}$ on a computer (using, e.g., IEEE double precision)? Let's say moderate here means on the order of 10 to 100---a reasonable interpretation. Justify your response.
+
+
+
+% \subsection*{Question 6:}
+% Let $x,y \in \R^{n}$ be two vectors of length $n.$ Bound the floating point error of computing $x^Ty$ in terms of $\epsilon$ (machine precision) and $n.$
+
+\end{document}
