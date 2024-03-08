@@ -1,0 +1,72 @@
+\documentclass[11pt,onecolumn]{article}
+\usepackage{amssymb, amsmath, amsthm,graphicx, paralist,algpseudocode,algorithm,cancel,url,color}
+\usepackage{sectsty}
+\usepackage{fancyvrb}
+\usepackage{mathrsfs}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+% \usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+\usepackage{listings}
+\usepackage{enumitem}
+
+\newcommand{\bvec}[1]{\mathbf{#1}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Rn}{\R^{n\times n}}
+\newcommand{\Rmn}{\R^{m\times n}}
+\newcommand{\Cn}{\C^{n\times n}}
+\newcommand{\Cmn}{\C^{m\times n}}
+\newcommand{\cO}{\mathcal{O}}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\trace}{trace}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\vspan}{span}
+\sectionfont{\Large\sc}
+\subsectionfont{\sc}
+\usepackage[margin=1 in]{geometry}
+\begin{document}
+\noindent
+\textsc{\Large Numerical analysis: Homework 3}\\
+Instructor: Anil Damle\\
+Due: March 8, 2024\\
+
+\subsection*{Policies}
+You may discuss the homework problems freely with other students, but please
+refrain from looking at their code or writeups (or sharing your own).
+Ultimately, you must implement your own code and write up your own solution to
+be turned in. Your solution, including plots and requested output from your code
+should be typeset and submitted via the Gradescope as a pdf file. This file must be self contained for grading. Additionally, please
+submit any code written for the assignment as zip
+file to the separate Gradescope assignment for code.\\
+\hrule
+\vspace{1cm}
+\noindent
+
+\subsection*{Question 1:}
+Assume that we are given $A\in\mathbb{R}^{n\times n},$ $A=A^T,$ and $A$ has eigenvalue and vector pairs $\left\{(v_i,\lambda_i)\right\}_{i=1}^n.$ Furthermore, assume that $\lvert\lambda_1\rvert = \lvert\lambda_2\rvert > \lvert \lambda_3\rvert \geq \lvert\lambda_4\rvert \geq \cdots.$ 
+
+\begin{enumerate}[label=(\alph*)]
+\item Prove that for any initial guess $v^{(0)}$ such that $v^{(0)}$ is not simultaneously orthogonal to both $v_1$ and $v_2$ the power method yields iterates $v^{(k)}$ that converge to lie in the span of $v_1$ and $v_2.$
+\item What is the rate of convergence of $$\left(1-\left\|\left(v^{(k)}\right)^T\begin{bmatrix}v_1 & v_2\end{bmatrix}\right\|^2_2\right)^{1/2}?$$ 
+\item Does the associated eigenvalue estimate via the Rayleigh quotient necessarily converge in this setting? what about if $\lambda_1 = \lambda_2?$
+\end{enumerate}
+
+\subsection*{Question 2:}
+Assume that we are given $A\in\mathbb{R}^{n\times n},$ $A=A^T,$ and $A$ has eigenvalue and vector pairs $\left\{(v_i,\lambda_i)\right\}_{i=1}^n.$ Furthermore, assume that $\lambda_1 \geq \lambda_2 \geq \cdots \geq \lambda_\ell > \lambda_{\ell+1}\geq \cdots \geq \lambda_n \geq 0.$ Now, say we run simultaneous iteration (also known an orthogonal iteration) to compute $\vspan\{v_1,\ldots,v_\ell\}$ and the associated eigenvalues $\lambda_1,\ldots,\lambda_\ell.$
+
+\begin{enumerate}[label=(\alph*)]
+\item If we denote $\hat{\lambda}_1^{(k)}$ as our guess for $\lambda_1$ at iteration $k,$ show that $\lambda_1 \geq \hat{\lambda}_1^{(k)}$ for all $k.$ I.e., our guess for $\lambda_1$ converges from below.
+\item As we discussed in class, one reason to discuss convergence of the entire subspace is that it is insensitive to gaps (or the lack thereof) between the first $\ell$ eigenvalues. If we instead assume $\lambda_1 > \lambda_2 > \cdots > \lambda_\ell > \lambda_{\ell+1}\geq \cdots \geq \lambda_n \geq 0,$ would we expect the columns of $V^{(k)}$ (the ON basis for our guess at the invariant subspace of interest at iteration $k$) to converge to individual eigenvectors (in an appropriate sense)? If so, what might be expect the asymptotic rates of convergence to be? (For this last part a convincing argument suffices, we do not need a formal proof.)
+\end{enumerate}
+
+\subsection*{Question 3 (a more challenging, ungraded problem):}
+Let $A$ be a $n\times n$ matrix that is not diagonalizable, and whose eigenvalue of largest magnitude, denoted $\lambda_1,$ is associated with a Jordan block of size two. You may assume the rest of the eigenvalues ($\lambda_2,\ldots,\lambda_{n-1}$) are simple. This means that there exists a matrix $X$ such that 
+\[
+X^{-1}AX = \begin{bmatrix}\lambda_1 & 1 & \\ & \lambda_1 & \\ & & \Lambda \end{bmatrix}
+\]
+where $\Lambda$ is a diagonal matrix and $\|\Lambda\|_2<\lvert \lambda_1\rvert.$ Given essentially any initial guess, what, if anything, does the power method applied to $A$ converge to? If it does converge, at what rate does it do so? 
+
+\end{document}
