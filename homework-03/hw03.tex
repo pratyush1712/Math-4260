@@ -1,0 +1,215 @@
+\documentclass[11pt,onecolumn]{article}
+\usepackage{amssymb, amsmath, amsthm,graphicx, paralist,algpseudocode,algorithm,cancel,url,color}
+\usepackage{sectsty}
+\usepackage{fancyvrb}
+\usepackage{mathrsfs}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+% \usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+\usepackage{listings}
+\usepackage{enumitem}
+
+\newcommand{\bvec}[1]{\mathbf{#1}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Rn}{\R^{n\times n}}
+\newcommand{\Rmn}{\R^{m\times n}}
+\newcommand{\Cn}{\C^{n\times n}}
+\newcommand{\Cmn}{\C^{m\times n}}
+\newcommand{\cO}{\mathcal{O}}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\trace}{trace}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\vspan}{span}
+\sectionfont{\Large\sc}
+\subsectionfont{\sc}
+\usepackage[margin=1 in]{geometry}
+\begin{document}
+\noindent
+\textsc{\Large Numerical analysis: Homework 3}\\
+Student: Pratyush Sudhakar (ps2245)\\
+\hrule
+\noindent
+
+\subsection*{Question 1:}
+Assume that we are given $A\in\mathbb{R}^{n\times n},$ $A=A^T,$ and $A$ has eigenvalue and vector pairs $\left\{(v_i,\lambda_i)\right\}_{i=1}^n.$ Furthermore, assume that $\lvert\lambda_1\rvert = \lvert\lambda_2\rvert > \lvert \lambda_3\rvert \geq \lvert\lambda_4\rvert \geq \cdots.$
+
+\begin{enumerate}[label=(\alph*)]
+	\item Prove that for any initial guess $v^{(0)}$ such that $v^{(0)}$ is not simultaneously orthogonal to both $v_1$ and $v_2$ the power method yields iterates $v^{(k)}$ that converge to lie in the span of $v_1$ and $v_2.$
+
+	      \textbf{Solution}:
+	      We know that $v_0$ is not orthogonal to both $v_1$ and $v_2$. Thus, we can write $$v_0 = c_1v_1 + c_2v_2 + \cdots + c_nv_n,$$ where not both $c_1$ and $c_2$ are zero.
+
+	      Now, by the power method, we have
+	      \begin{align*}
+		      v^{(k)}          & = A^kv^{(0)}                                                          \\
+		                       & = A^k(c_1v_1 + c_2v_2 + \cdots + c_nv_n)                              \\
+		                       & = c_1\lambda_1^kv_1 + c_2\lambda_2^kv_2 + \cdots + c_n\lambda_n^kv_n. \\
+		      (\because A^kv_i & = \lambda_i^kv_i)
+	      \end{align*}
+
+	      We can write this as,
+	      \begin{align*}
+		      v^{(k)}          & = c_1\lambda_1^k\left(v_1 + \frac{c_2}{c_1}\left(\frac{\lambda_2}{\lambda_1}\right)^kv_2 + \cdots + \frac{c_n}{c_1}\left(\frac{\lambda_n}{\lambda_1}\right)^kv_n\right);      \\
+		      \implies v^{(k)} & = c_1\lambda_1^k\left(v_1 + \frac{c_2}{c_1}\left(\frac{\lambda_2}{\lambda_1}\right)^kv_2 + \sum_{i=3}^{n}\frac{c_i}{c_1}\left(\frac{\lambda_i}{\lambda_1}\right)^kv_i\right).
+	      \end{align*}
+
+	      Since, $\lvert\lambda_1\rvert = \lvert\lambda_2\rvert > \lvert \lambda_3\rvert \geq \lvert\lambda_4\rvert \geq \cdots$, we have $\left(\frac{\lambda_2}{\lambda_1}\right) = \pm 1$ and $\left(\frac{\lambda_i}{\lambda_1}\right)^k \to 0$ as $k\to\infty$.
+	      Thus, we have
+	      \begin{align*}
+		      v^{(k)} & = c_1\lambda_1^k\left(v_1 + \frac{c_2}{c_1}\left(\frac{\lambda_2}{\lambda_1}\right)^kv_2 + \sum_{i=3}^{n}\frac{c_i}{c_1}\left(\frac{\lambda_i}{\lambda_1}\right)^kv_i\right) \\
+		              & \approx c_1\lambda_1^k\left(v_1 \pm \frac{c_2}{c_1}v_2\right);\;\;          (\text{as $k\to \infty$})                                                                        \\
+		              & = c_1\lambda_1^k\cdot v_1 \pm c_2\lambda_1^k\cdot v_2;
+	      \end{align*}
+	      where the $\pm$ sign depends on the sign of $\left(\frac{\lambda_2}{\lambda_1}\right)^k$. In both cases, we see that $v^{(k)}$ converges to the span of $v_1$ and $v_2$.
+	\item What is the rate of convergence of $$\left(1-\left\|\left(v^{(k)}\right)^T\begin{bmatrix}v_1 & v_2\end{bmatrix}\right\|^2_2\right)^{1/2}?$$
+
+	      \textbf{Solution}:
+	      We know that $v^{(k)}$ converges to the span of $v_1$ and $v_2$. Thus, we can write $v^{(k)}$ as
+	      \begin{align*}
+		      v^{(k)} & = c_1\lambda_1^k v_1 + c_2\lambda_2^k v_2 + \cdots + c_n\lambda_n^k v_n.
+	      \end{align*}
+
+	      Now, we can write $v^{(k)}$ as
+	      \begin{align*}
+		      v^{(k)} & = c_1\lambda_1^k\left(v_1 + \frac{c_2}{c_1}\left(\frac{\lambda_2}{\lambda_1}\right)^k v_2 + \cdots + \frac{c_n}{c_1}\left(\frac{\lambda_n}{\lambda_1}\right)^k v_n\right)       \\
+		              & = c_1\lambda_1^k\left(v_1 + \frac{c_2}{c_1}\left(\frac{\lambda_2}{\lambda_1}\right)^k v_2 + \sum_{i=3}^{n}\frac{c_i}{c_1}\left(\frac{\lambda_i}{\lambda_1}\right)^k v_i\right).
+	      \end{align*}
+
+	      We know that the eigenvectors of a symmetric matrix are orthogonal. Thus, we can write the dot product of $v^{(k)}$ with $v_1$ and $v_2$ as
+	      \begin{alignat*}{3}
+		        & \left\|\left(v^{(k)}\right)^T\begin{bmatrix}v_1 & v_2\end{bmatrix}\right\|^2_2                &  & = \left\|\begin{bmatrix}c_1\lambda_1^k v_1 & c_2\lambda_2^k v_2 & \cdots & c_n\lambda_n^k v_n\end{bmatrix}\begin{bmatrix}v_1 & v_2\end{bmatrix}\right\|^2_2 &                                                                                                                                                      \\
+		        &                                                                                   &  & = \left\|\begin{bmatrix}c_1\lambda_1^k v_1^Tv_1 & c_2\lambda_2^k v_2^Tv_1 & \cdots & c_n\lambda_n^k v_n^Tv_1\end{bmatrix}\right\|^2_2                         &                                                                                                                                                      \\
+		        &                                                                                   &  & = \left\|\begin{bmatrix}c_1\lambda_1^k v_1^T v_1 & c_2\lambda_2^k v_2^T v_2 & 0 & \cdots & 0\end{bmatrix}\right\|^2_2                         &   & (\because v_i^Tv_j = 0 \text{ for } i \neq j) \footnote[1]{Eigenvectors of a symmetric matrix are orthogonal.
+			      \href{https://dept.math.lsa.umich.edu/~speyer/LinearAlgebraVideos/Lecture10a.pdf}{source}
+		      }                                                                                                                                                                                                                                                                                                                         \\
+		        &                                                                                   &  & = \|c_1\lambda_1^k \quad c_2\lambda_2^k \|^2_2                          &   & (\because v_i^Tv_i = 1;\;\; \forall i)           \footnote[2]{Eigenvectors are normalized and therefore their dot product with themselves is 1.}
+		      \\
+		      = & \frac{\left(c_1\lambda_1^k\right)^2 + \left(c_2\lambda_2^k\right)^2}{||v_k||_2^2}
+	      \end{alignat*}
+
+
+	      We need to determine the norm of \(v^{(k)}\):
+	      \[
+		      \|v^{(k)}\|_2^2 = \left\|c_1\lambda_1^k v_1 + c_2\lambda_2^k v_2 + \sum_{i=3}^{n} c_i \lambda_i^k v_i\right\|_2^2
+	      \]
+	      Since eigenvectors are orthogonal:
+	      \[
+		      \|v^{(k)}\|_2^2 = \left(c_1 \lambda_1^k\right)^2 + \left(c_2 \lambda_2^k\right)^2 + \sum_{i=3}^{n} \left(c_i \lambda_i^k\right)^2
+	      \]
+
+	      The term we are interested in is:
+	      \[
+		      \left(1 - \left\|\left(v^{(k)}\right)^T \begin{bmatrix} v_1 & v_2 \end{bmatrix}\right\|_2^2\right)^{1/2}
+	      \]
+	      Substituting the expressions derived above:
+	      \[
+		      \left\|\left(v^{(k)}\right)^T \begin{bmatrix} v_1 & v_2 \end{bmatrix}\right\|_2^2 = \frac{\left(c_1 \lambda_1^k\right)^2 + \left(c_2 \lambda_2^k\right)^2}{\left(c_1 \lambda_1^k\right)^2 + \left(c_2 \lambda_2^k\right)^2 + \sum_{i=3}^{n} \left(c_i \lambda_i^k\right)^2}
+	      \]
+
+	      Therefore:
+	      \[
+		      1 - \left\|\left(v^{(k)}\right)^T \begin{bmatrix} v_1 & v_2 \end{bmatrix}\right\|_2^2 = 1 - \frac{\left(c_1 \lambda_1^k\right)^2 + \left(c_2 \lambda_2^k\right)^2}{\left(c_1 \lambda_1^k\right)^2 + \left(c_2 \lambda_2^k\right)^2 + \sum_{i=3}^{n} \left(c_i \lambda_i^k\right)^2}
+	      \]
+
+	      Simplifying the fraction:
+	      \[
+		      1 - \left\|\left(v^{(k)}\right)^T \begin{bmatrix} v_1 & v_2 \end{bmatrix}\right\|_2^2 = \frac{\sum_{i=3}^{n} \left(c_i \lambda_i^k\right)^2}{\left(c_1 \lambda_1^k\right)^2 + \left(c_2 \lambda_2^k\right)^2 + \sum_{i=3}^{n} \left(c_i \lambda_i^k\right)^2}
+	      \]
+
+	      As $k \to \infty$, the terms involving $\lambda_i$ (for $i \ge 3$) will dominate the denominator:
+	      \[
+		      \frac{\sum_{i=3}^{n} \left(c_i \lambda_i^k\right)^2}{\left(c_1 \lambda_1^k\right)^2 + \left(c_2 \lambda_2^k\right)^2}
+	      \]
+
+	      Since $\left|\lambda_3\right| < \left|\lambda_1\right|$ and $\left|\lambda_3\right| < \left|\lambda_2\right|$, this fraction tends to zero as $k \to \infty$.
+
+	      The rate of convergence is dominated by the largest $\lambda_i$ such that $|\lambda_i| < |\lambda_1|$. This gives the rate of convergence as:
+	      \[
+		      \left(1 - \left\|\left(v^{(k)}\right)^T \begin{bmatrix} v_1 & v_2 \end{bmatrix}\right\|_2^2\right)^{1/2} \approx \left(\frac{|\lambda_3|}{|\lambda_1|}\right)^k
+	      \]
+
+	      Thus, the solution correctly concludes that the rate of convergence is $\left(\frac{|\lambda_3|}{|\lambda_1|}\right)^k$, which is the slowest decaying term due to $|\lambda_3|$ being the largest eigenvalue less than $|\lambda_1|$.
+
+	\item Does the associated eigenvalue estimate via the Rayleigh quotient necessarily converge in this setting? what about if $\lambda_1 = \lambda_2?$ \\
+	      \textbf{Solution:}
+	      The Rayleigh quotient is defined as
+	      \begin{align*}
+		      \rho(v) & = \frac{v^TAv}{v^Tv} = \frac{(\sum_{i=1}^n c_i\lambda_i^k v_i)^T \cdot A \cdot \sum_{i=1}^n c_i\lambda_i^k v_i}{\sum_{i=1}^n c_i^2 \cdot \lambda_i^{2k}}.
+	      \end{align*}
+
+	      As $k\to\infty$, we have $\lambda_i^k \to 0$ for $i>2$. Thus, the Rayleigh quotient converges to $\rho(v) = \frac{c_1^2\lambda_1^k \lambda_1^{k+1} + c_2^2\lambda_2^k \lambda_2^{k+1}}{c_1^2\lambda_1^{2k} + c_2^2\lambda_2^{2k}}$. Since, the first two eigen values will dominate the Rayleigh quotient.
+
+	      If $\lambda_1 = -\lambda_2$, then the Rayleigh quotient will be,
+
+	      \begin{align*}
+		      \rho(v) & = \frac{c_1\lambda_1^k \lambda_1^{k+1} + c_2\lambda_2^k \lambda_2^{k+1}}{c_1^2\lambda_1^{2k} + c_2^2\lambda_2^{2k}} = \frac{c_1\lambda_1^k \lambda_1^{k+1} - c_1\lambda_1^k \lambda_1^{k+1}}{c_1^2\lambda_1^{2k} + c_1^2\lambda_1^{2k}} = \frac{\lambda (c_1^2 - c_2^2)}{c_1^2 + c_2^2}
+	      \end{align*}
+
+	      We know that it will converge to $0$ when $|c_1| \approx |c_2|$. Thus, the Rayleigh quotient will not converge in this setting.
+
+	      If $\lambda_1 = \lambda_2$, then the Rayleigh quotient will be,
+
+	      \begin{align*}
+		      \rho(v) & = \frac{c_1\lambda_1^k \lambda_1^{k+1} + c_2\lambda_2^k \lambda_2^{k+1}}{c_1^2\lambda_1^{2k} + c_2^2\lambda_2^{2k}} = \frac{c_1\lambda_1^k \lambda_1^{k+1} + c_2\lambda_1^k \lambda_1^{k+1}}{c_1^2\lambda_1^{2k} + c_1^2\lambda_1^{2k}} = \lambda_1
+	      \end{align*}
+
+	      Thus, the Rayleigh quotient will accurately converge to $\lambda_1$ when $\lambda_1 = \lambda_2$.
+\end{enumerate}
+
+\subsection*{Question 2:}
+
+\begin{enumerate}[label=(\alph*)]
+	\item If we denote $\hat{\lambda}_1^{(k)}$ as our guess for $\lambda_1$ at iteration $k,$ show that $\lambda_1 \geq \hat{\lambda}_1^{(k)}$ for all $k.$ I.e., our guess for $\lambda_1$ converges from below. \\
+	      \textbf{Solution:} We will use Rayleigh quotient to show that $\lambda_1 \geq \hat{\lambda}_1^{(k)}$ for all $k$.
+
+	      We know that the Rayleigh quotient is defined as
+	      \begin{align*}
+		      \rho(v) & = \frac{v^TAv}{v^Tv}
+	      \end{align*}
+
+	      We know that the Rayleigh quotient converges to the largest eigenvalue, $\lambda_1$, when $v$ is the eigenvector corresponding to $\lambda_1$. We know that $\lambda_1$ is the largest eigenvalue of $A$. Thus, the Rayleigh quotient's maximum value is $\lambda_1$.
+
+	      \begin{align*}
+		      \lambda_1 = max(\rho(v)) & = max(\frac{v^TAv}{v^Tv}),\;and             \\
+		      \hat{\lambda}_1^{(k)}    & = \frac{v^{(k)T}Av^{(k)}}{v^{(k)T}v^{(k)}};
+	      \end{align*}
+	      where $v^{(k)}$ is the estimated eigenvector at kth iteration.
+
+	      Since the Rayleigh quotient gives an estimate of the eigenvalue that is bounded above by the largest eigenvalue, we have:
+	      \[
+	      \rho(v^{(k)}) \leq \lambda_1
+	      \]
+
+	      Therefore:
+	      \[
+	      \hat{\lambda}_1^{(k)} = \rho(v^{(k)}) \leq \lambda_1
+	      \]
+		  As $v^{(k)}$ approaches the eigenvector corresponding to $\lambda_1$, it yields an increasingly accurate estimate of $\lambda_1$. The Rayleigh quotient's maximum value for any vector $v$ is $\lambda_1$. If $\hat{\lambda}_1^{(k)}$ were to exceed $\lambda_1$, it would contradict $\lambda_1$ being the largest eigenvalue. Thus, our iterative approximation improves and converges to $\lambda_1$ without exceeding it.
+
+		  Thus, we have $\lambda_1 \geq \hat{\lambda}_1^{(k)}$ for all $k$.
+
+	\item If we instead assume $\lambda_1 > \lambda_2 > \cdots > \lambda_\ell > \lambda_{\ell+1}\geq \cdots \geq \lambda_n \geq 0,$ would we expect the columns of $V^{(k)}$ to converge to individual eigenvectors (in an appropriate sense)? If so, what might be expect the asymptotic rates of convergence to be? \\
+	\textbf{Solution:}
+
+	Assuming $\lambda_1 > \lambda_2 > \cdots > \lambda_\ell > \lambda_{\ell+1} \geq \cdots \geq \lambda_n \geq 0$, we have distinct first $\ell$ eigenvalues. In this scenario, the columns of $V^{(k)}$ will indeed converge to individual eigenvectors. The orthogonal iteration ensures that the vectors remain orthogonal through each iteration, progressively aligning the subspace with the eigenvectors.
+	
+	The convergence rate for each eigenvector depends on the gaps between the eigenvalues. Specifically, the rate of convergence for the $i$-th eigenvector is influenced by the ratio between the $(i+1)$-th eigenvalue and the $i$-th eigenvalue. Mathematically, the convergence rate for the $i$-th eigenvector is determined by:
+	\[
+	\left| \frac{\lambda_{i+1}}{\lambda_i} \right|
+	\]
+	
+	For example, if there is a significant difference between the first two eigenvalues $\lambda_1$ and $\lambda_2$, the first column of $V^{(k)}$ will converge more rapidly to the first eigenvector. Conversely, if the eigenvalues $\lambda_{\ell}$ and $\lambda_{\ell+1}$ are close in value, the convergence of the $\ell$-th column to the $\ell$-th eigenvector will be slower.
+	
+	The larger the gap between successive eigenvalues, the faster the convergence. This is because a larger gap ensures that the component of the iteration vector in the direction of the $i$-th eigenvector grows more rapidly relative to the components in the directions of other eigenvectors, thus accelerating convergence.
+	
+	In conclusion, the columns of $V^{(k)}$ will converge to the individual eigenvectors at rates proportional to the ratios of successive eigenvalues.	
+
+\end{enumerate}
+
+
+\end{document}

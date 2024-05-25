@@ -1,0 +1,106 @@
+
+\documentclass[11pt,onecolumn]{article}
+\usepackage{amssymb, amsmath, amsthm,graphicx, paralist,algpseudocode,algorithm,cancel,url,color}
+\usepackage{sectsty}
+\usepackage{fancyvrb}
+\usepackage{mathrsfs}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+% \usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+\usepackage{listings}
+\usepackage{enumitem}
+
+\newcommand{\bvec}[1]{\mathbf{#1}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Rn}{\R^{n\times n}}
+\newcommand{\Rmn}{\R^{m\times n}}
+\newcommand{\Cn}{\C^{n\times n}}
+\newcommand{\Cmn}{\C^{m\times n}}
+\newcommand{\cO}{\mathcal{O}}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\trace}{trace}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\vspan}{span}
+\sectionfont{\Large\sc}
+\subsectionfont{\sc}
+\usepackage[margin=1 in]{geometry}
+\begin{document}
+\noindent
+\textsc{\Large Numerical analysis: Homework 5}\\
+Pratyush Sudhakar
+\\
+\vspace{3pt}
+\hrule
+
+\subsection*{Question 1:}
+Consider the penalized formulation for solving a quadratic problem with equality constraints
+\begin{equation}
+\min_x \frac{1}{2}x^THx + x^Tc + \frac{1}{2\mu}\|Ax-b\|_2^2,
+\label{eqn:1}
+\end{equation}
+where $H\in\Rn$ is symmetric, $c\in\R^n,$ $\mu > 0,$ and $A\in\Rmn$ with $m<n$ and full row-rank. Let $Z\in\R^{n\times (n-m)}$ be a matrix with orthonormal columns whose range is the null space of $A.$ Show that if $Z^THZ$ is positive definite, then for all sufficiently small $\mu$~\eqref{eqn:1} has a unique solution and that solution is a strict local minimizer.
+\\
+\textbf{Solution:}
+To demonstrate that the quadratic problem
+\[
+\min_x \frac{1}{2}x^THx + x^Tc + \frac{1}{2\mu}\|Ax-b\|_2^2
+\]
+has a unique solution and that solution is a strict local minimizer for sufficiently small \(\mu\), we will analyze the Hessian matrix.
+\\
+The objective function is quadratic in \(x\), and its Hessian matrix is given by:
+\[
+\nabla^2 f(x) = H + \frac{1}{\mu}A^T A.
+\]
+We aim to show that this matrix is positive definite for sufficiently small \(\mu\).
+\\
+To establish that \(H + \frac{1}{\mu}A^T A\) is positive definite, we need to show that for any non-zero vector \(v \in \mathbb{R}^n\),
+\[
+v^T \left(H + \frac{1}{\mu} A^T A\right) v > 0; \forall\;\|v\|_2 = 1
+\]
+\\
+We decompose \(v\) into two orthogonal components:
+\[
+v = v_\mathcal{N} + v_\mathcal{R},
+\]
+where \(v_\mathcal{N}\) is in the null space of \(A\) and \(v_\mathcal{R}\) is in the range of \(A^T\). Thus, \(A v_\mathcal{R} \neq 0\) and \(A v_\mathcal{N} = 0\). It follows that \(\|v\|_2^2 = \|v_\mathcal{N}\|_2^2 + \|v_\mathcal{R}\|_2^2\).
+\\
+Consider the quadratic form:
+\[
+v^T \left(H + \frac{1}{\mu} A^T A\right) v = (v_\mathcal{N} + v_\mathcal{R})^T \left(H + \frac{1}{\mu} A^T A\right) (v_\mathcal{N} + v_\mathcal{R}).
+\]
+Expanding this expression, we get:
+\[
+v_\mathcal{N}^T H v_\mathcal{N} + 2 v_\mathcal{N}^T H v_\mathcal{R} + v_\mathcal{R}^T H v_\mathcal{R} + \frac{1}{\mu} v_\mathcal{R}^T A^T A v_\mathcal{R}.
+\]
+\\
+To demonstrate positive definiteness, we need to establish a lower bound for the quadratic form. Using eigenvalues and singular values, we have:
+\[
+\lambda_{\min}(Z^T H Z) \|v_\mathcal{N}\|_2^2 - 2 \sigma_{\max}(H) \|v_\mathcal{R}\|_2 \|v_\mathcal{N}\|_2 + \frac{1}{\mu} \sigma_{\min}(A)^2 \|v_\mathcal{R}\|_2^2,
+\]
+where \(\lambda_{\min}\) is the minimum eigenvalue of \(Z^T H Z\) and \(\sigma_{\min}\), \(\sigma_{\max}\) are the minimum and maximum singular values of \(A\), respectively.
+\\
+Since \(\|v\|_2^2 = 1\), we write:
+\[
+\|v_\mathcal{N}\|_2^2 = 1 - \|v_\mathcal{R}\|_2^2.
+\]
+Thus, the quadratic form becomes:
+\[
+\lambda_{\min}(Z^T H Z) (1 - \|v_\mathcal{R}\|_2^2) - 2 \sigma_{\max}(H) \|v_\mathcal{R}\|_2 \sqrt{1 - \|v_\mathcal{R}\|_2^2} + \frac{1}{\mu} \sigma_{\min}(A)^2 \|v_\mathcal{R}\|_2^2.
+\]
+\\
+To ensure the positive definiteness of the Hessian matrix, consider the quadratic term in \(\|v_\mathcal{R}\|_2^2\):
+\[
+\left( \frac{1}{\mu} \sigma_{\min}(A)^2 - \lambda_{\min}(Z^T H Z) \right) \|v_\mathcal{R}\|_2^2 - 2 \sigma_{\max}(H) \|v_\mathcal{R}\|_2 \sqrt{1 - \|v_\mathcal{R}\|_2^2} + \lambda_{\min}(Z^T H Z).
+\]
+This quadratic form will be positive if:
+\[
+\frac{1}{\mu} \sigma_{\min}(A)^2 - \lambda_{\min}(Z^T H Z) > 0 \quad \text{and} \quad \sigma_{\max}(H)^2 < \left( \frac{1}{\mu} \sigma_{\min}(A)^2 - \lambda_{\min}(Z^T H Z) \right) \lambda_{\min}(Z^T H Z).
+\]
+\\
+For sufficiently small \(\mu\), these conditions are satisfied, ensuring that the Hessian \(H + \frac{1}{\mu} A^T A\) is positive definite. This guarantees that the penalized problem has a unique solution, and this solution is a strict local minimizer.
+
+\end{document}
