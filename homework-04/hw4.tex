@@ -203,19 +203,13 @@ Hence, proved.
 
 \subsection*{Question 3:}
 Prove that if $\nabla f(x) = 0$ but the Hessian $\nabla^2f(x)$ is indefinite (i.e., has positive and negative eigenvalues), then there is a direction we can move from $x$ that decreases the function value provided we take a small enough step. (I.e., show that $x$ is not a local minimizer and that we can make progress when running an optimization scheme using so-called directions of negative curvature.)
-
-\vspace*{12pt}
-
-\noindent
+\\
+\vspace{1pt}
+\\
 \textbf{Solution:}
-\\
-\\
-\textbf{NOTE VERIFIED NOT VERY SURE ABOUT THE PROOF}
-\\
-\\
 Given that \(\nabla f(x) = 0\) and the Hessian \(\nabla^2 f(x)\) is indefinite, we need to show that there exists a direction in which moving from \(x\) decreases the function value.
 \\
-The second-order Taylor expansion of \(f\) around a point \(x\) is:
+The second-order Taylor expansion of \(f\) around the point \(x\) is:
 \[
 f(x + p) \approx f(x) + \nabla f(x)^T p + \frac{1}{2} p^T \nabla^2 f(x) p
 \]
@@ -230,36 +224,39 @@ The Hessian \(\nabla^2 f(x)\) being indefinite means it has both positive and ne
 p^T \nabla^2 f(x) p < 0
 \]
 \\
-Consider the Rayleigh quotient:
+To find such a direction \(p\), consider the eigenvalues and eigenvectors of \(\nabla^2 f(x)\). Since \(\nabla^2 f(x)\) is indefinite, it has at least one negative eigenvalue. Let \(v\) be an eigenvector corresponding to a negative eigenvalue \(\lambda < 0\) of \(\nabla^2 f(x)\). Then:
 \[
-R(p) = \frac{p^T \nabla^2 f(x) p}{p^T p}
-\]
-The Rayleigh quotient achieves its minimum and maximum values at the eigenvalues of \(\nabla^2 f(x)\). Since \(\nabla^2 f(x)\) is indefinite, its eigenvalues include both positive and negative values, ensuring that there is some direction \(p\) for which \(R(p) < 0\).
-\\
-Let \(p\) be an eigenvector corresponding to a negative eigenvalue \(\lambda\) of \(\nabla^2 f(x)\). Then:
-\[
-\nabla^2 f(x) p = \lambda p
+\nabla^2 f(x) v = \lambda v
 \]
 and
 \[
-p^T \nabla^2 f(x) p = \lambda p^T p
+v^T \nabla^2 f(x) v = \lambda v^T v
 \]
 \\
-Since \(\lambda < 0\):
+Since \(\lambda < 0\) and \(v^T v > 0\) (as \(v\) is nonzero), we have:
 \[
-p^T \nabla^2 f(x) p < 0
+v^T \nabla^2 f(x) v < 0
 \]
 \\
-By choosing \(p\) in the direction of this eigenvector, we can ensure that the second-order term in the Taylor expansion is negative:
+Now, let \(p = \alpha v\) for some scalar \(\alpha > 0\). Substituting \(p = \alpha v\) into the Taylor expansion, we get:
 \[
-f(x + p) \approx f(x) + \frac{1}{2} p^T \nabla^2 f(x) p < f(x)
+f(x + \alpha v) \approx f(x) + \frac{1}{2} (\alpha v)^T \nabla^2 f(x) (\alpha v) = f(x) + \frac{1}{2} \alpha^2 v^T \nabla^2 f(x) v
 \]
 \\
-Thus, for a sufficiently small step size \(\alpha > 0\), moving in the direction \(p\) will decrease the function value:
+Since \(v^T \nabla^2 f(x) v < 0\), this becomes:
 \[
-f(x + \alpha p) < f(x)
+f(x + \alpha v) \approx f(x) + \frac{1}{2} \alpha^2 \lambda v^T v
 \]
 \\
-This implies that \(x\) is not a local minimizer, as there exists a direction \(p\) in which the function value decreases. Hence, we can make progress in an optimization scheme by moving in directions of negative curvature.
+Given that \(\lambda < 0\) and \(v^T v > 0\), the term \(\frac{1}{2} \alpha^2 \lambda v^T v\) is negative. Therefore:
+\[
+f(x + \alpha v) < f(x)
+\]
+\\
+Thus, by choosing \(p = \alpha v\) for a sufficiently small \(\alpha > 0\), moving in the direction of the eigenvector \(v\) corresponding to a negative eigenvalue of the Hessian \(\nabla^2 f(x)\) will decrease the function value. This implies that \(x\) is not a local minimizer, as there exists a direction \(p\) in which the function value decreases.
+\\
+\vspace{0pt}
+\\
+Hence, we can make progress in an optimization scheme by moving in directions of negative curvature.
 
 \end{document}
