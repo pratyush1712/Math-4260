@@ -60,43 +60,85 @@ Pratyush Sudhakar
 \hrule
 \noindent
 
-\subsection*{A simple model}
+\section*{Question 1: Optimization Algorithms Implemented}
+\textbf{Solution:} For this project, I implemented two optimization algorithms: Gradient Descent and a Quasi-Newton method using the BFGS algorithm.
+\subsection*{Gradient Descent}
+Gradient Descent is a first-order optimization algorithm that updates the positions of the atoms iteratively in the direction of the negative gradient of the total energy. The update rule is:
+\[ \mathbf{x}_{k+1} = \mathbf{x}_k - \alpha \nabla E(\mathbf{x}_k) \]
+where \( \alpha \) is the step size determined by a line search, and \( \nabla E(\mathbf{x}_k) \) is the gradient of the energy at the current positions.
+\subsection*{BFGS (Quasi-Newton Method)}
+BFGS is a quasi-Newton method that approximates the Hessian matrix of second derivatives of the energy function. The update rule uses an approximation of the inverse Hessian to adjust the search direction:
+\[ \mathbf{x}_{k+1} = \mathbf{x}_k - \alpha H_k \nabla E(\mathbf{x}_k) \]
+where \( H_k \) is the inverse Hessian approximation at iteration \( k \).
+\subsection*{Line Search}
+For both algorithms, I implemented a backtracking line search to ensure the step size \( \alpha \) satisfies the Wolfe conditions. This involves reducing \( \alpha \) iteratively by a factor of \( \beta \) (chosen as 0.8) until the energy decreases sufficiently:
+\[ E(\mathbf{x} + \alpha \mathbf{p}) \leq E(\mathbf{x}) + c \alpha \nabla E(\mathbf{x}) \cdot \mathbf{p} \]
+where \( \mathbf{p} \) is the search direction and \( c \) is a small constant (chosen as \( 10^{-4} \)).
+\subsection*{Stopping Criteria}
+The optimization process stops when the norm of the gradient is below a tolerance level (\( 10^{-6} \)), indicating that the solution has converged to a local minimum.
 
-For the purpose of this problem, we are going to consider $N$ atoms in three dimensional Euclidean space and try to find energy minimizing configurations. A common model for the interaction of neutral atoms is the so-called Lennard-Jones potential. Specifically, given two atomic locations $x_i$ and $x_j$ in $\mathbb{R}^3$ we define $r_{ij} = \|x_i-x_j\|_2$ and the potential between atoms as 
-\[
-V_{ij} = \frac{1}{r^{12}} - \frac{2}{r^6}.
-\]
-Note that there are several parameters in this model that define the optimal distance between two atoms, and the optimal energy. Here we have simply set those coefficients for you.
+\section*{Question 2: Globally Optimal Configurations for 2 and 3 Atoms}
+\subsection*{Optimal Configuration for 2 Atoms}
+For two atoms, the globally optimal configuration is straightforward. The atoms should be positioned such that the distance between them is at the minimum of the Lennard-Jones potential. This occurs at a distance \( r = 2^{1/6} \sigma \), where \( \sigma \) is the characteristic distance parameter in the Lennard-Jones potential.
 \\
-Now, given $N$ atoms defined by their locations $\{x_i\}_{i=1}^N$ the problem we wish to solve is 
-\[
-\min_{x_1,\ldots,x_N} \sum_{i<j} V_{ij}.
-\]
-However, since $V_{ij}$ is invariant with respect to translation of the set of locations $\{x_i\}_{i=1}^N$ it makes sense to fix the location of one of the atoms to $(0, 0, 0)^T.$ Therefore, we assume $x_1 = (0, 0, 0)^T$ and seek to find local minima (ideally the global minima) of
-\begin{equation}
-\min_{x_2,\ldots,x_N} \sum_{i=1}^{N-1}\sum_{j=i+1}^{N} V_{ij},
-\label{eqn:1}
-\end{equation}
-where $V_{1j}$ represents the interactions with the fixed atom at position $x_1.$ This is now an optimization problem in $3(N-1)$ variables.
+Using the gradient descent and BFGS algorithms, both methods converge to this distance, confirming the expected configuration.
 
-\subsection*{For this project}
-There are two concrete tasks for this project and one open ended one. In particular, you must implement two methods for solving~\eqref{eqn:1}. One should be gradient descent and the other can be either Newton's method or a Quasi-Newton method. Your implementations need to include a line search using sensible conditions and reasonable convergence criteria. Using these implementations you should complete the following tasks. Your writeup should be structured as a report with narrative flow through what you have done for the project while addressing the tasks along the way---each within a separate section. A portion of your grade will come from the quality of the writeup and how you effectively convey your arguments and answer the following questions.
+\subsection*{Optimal Configuration for 3 Atoms}
+For three atoms, the globally optimal configuration forms an equilateral triangle with side length equal to \( 2^{1/6} \sigma \). Both algorithms successfully find this configuration, and the energy values at convergence confirm that this is a global minimum.
 
-\bluebox{
-\paragraph{Question 1:} Which optimization algorithms did you implement? Describe your choices for the line search and stopping criteria.
-}
+\subsection*{Uniqueness of the Global Minimizer}
+The global minimizer for 2 atoms is unique due to the simplicity of the system. For 3 atoms, while the equilateral triangle configuration is the global minimum, it is not unique due to rotational and mirror symmetries.
 
-\bluebox{
-\paragraph{Question 2:} For 2 and 3 atoms find globally optimal configurations using your implementations (discuss/illustrate what the configurations are). Argue why you believe you have found a global optima in this case. In addition, is the global minimizer you found unique? Discuss why or why not.
-}
+\section*{Question 3: Order and Rate of Convergence for 3 Atoms}
 
-\bluebox{
-\paragraph{Question 3:} Illustrate the order/rate of convergence both your algorithms achieve for 3 atoms when finding the aforementioned minimizer. Do they match what you expect?
-}
+To illustrate the order and rate of convergence, I recorded the energy values and gradient norms at each iteration for both algorithms.
 
-\bluebox{
-\paragraph{Goal 1:} Explore computing minimal configurations with more than 3 atoms (you must try and discuss experiments with at least 5 atoms, how far you go beyond that is up to you) to see what you can find and how well your implementations perform. Discuss your findings, what you observe about this problem, and where some of the difficulties arise. (This is deliberately open ended, tell us what you learn in your exploration.)
-}
+\subsection*{Gradient Descent}
+The gradient descent algorithm exhibited a linear convergence rate. The energy decreases steadily, and the gradient norm reduces linearly over the iterations.
+
+\begin{figure}[H]
+  \includegraphics[width=0.5\textwidth]{descent_convergence.png}
+  \centering
+  \caption{Convergence of Gradient Descent}
+\end{figure}
+
+\subsection*{BFGS}
+The BFGS algorithm showed superlinear convergence, as expected. The energy drops more rapidly compared to gradient descent, and the gradient norm reduces faster, indicating the efficiency of the quasi-Newton method in capturing the curvature of the energy landscape.
+
+\begin{figure}[H]
+    \includegraphics[width=0.5\textwidth]{bfgs_convergence.png}
+    \centering
+    \caption{Convergence of BFGS}
+\end{figure}
+
+\section*{Goal 1: Exploration of Minimal Configurations for More Than 3 Atoms}
+
+\subsection*{Exploring Configurations for 5 Atoms}
+I extended the optimization algorithms to systems with more atoms. For 5 atoms, the algorithms found a configuration resembling a trigonal bipyramid, a known minimal configuration for the Lennard-Jones potential.
+
+\begin{figure}[H]
+    \includegraphics[width=0.5\textwidth]{5_atoms_config.png}
+    \centering
+    \caption{Optimized configurations for 5 atoms using Gradient Descent and BFGS}
+\end{figure}
+
+\subsection*{Observations and Challenges}
+\begin{itemize}
+    \item \textbf{Performance}: BFGS performed significantly better than gradient descent, especially as the number of atoms increased. We ran 7 tests for each atom count: 2, 3, 4, and 5. For 2 and 3, the algorithms converged to the global minimum. For 4 and 5, the BFGS algorithm performed better.
+      \begin{figure}[H]
+        \includegraphics[width=0.5\textwidth]{final_stats.png}
+        \centering
+        \caption{Final statistics for Gradient Descent and BFGS}
+    \end{figure}
+    \item \textbf{Local Minima}: The optimization landscape became more complex with more atoms, leading to multiple local minima. Initial positions greatly influenced the final configuration.
+    \item \textbf{Scalability}: Both methods faced challenges in terms of computational cost as the number of atoms increased, but BFGS was more robust due to its efficient use of curvature information.
+\end{itemize}
+
+\subsection*{Discussion}
+The exploration revealed that finding global minima for systems with more than 3 atoms requires careful consideration of initial positions and possibly more sophisticated global optimization techniques. The algorithms provided insight into the complexity and richness of the Lennard-Jones potential landscape.
+
+\section*{Conclusion}
+This project successfully implemented gradient descent and BFGS algorithms to find optimal configurations of atoms based on the Lennard-Jones potential. The line search and stopping criteria ensured robust convergence. While both methods worked well for small systems, BFGS proved more efficient for larger systems. The exploration of configurations with more than 3 atoms highlighted the challenges and intricacies of this optimization problem.
 
 
 
