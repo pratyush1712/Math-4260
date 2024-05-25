@@ -1,0 +1,103 @@
+
+\documentclass[11pt,onecolumn]{article}
+\usepackage{amssymb, amsmath, amsthm,graphicx, paralist,algpseudocode,algorithm,cancel,url,color}
+\usepackage{sectsty}
+\usepackage{fancyvrb}
+\usepackage{mathrsfs}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+% \usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{cleveref}
+\usepackage{tcolorbox}
+
+
+\newcommand{\bvec}[1]{\mathbf{#1}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\Rn}{\R^{n\times n}}
+\newcommand{\Rmn}{\R^{m\times n}}
+\newcommand{\Cn}{\C^{n\times n}}
+\newcommand{\Cmn}{\C^{m\times n}}
+\newcommand{\cO}{\mathcal{O}}
+\newcommand{\ls}{\textsc{ls}}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\trace}{trace}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\sectionfont{\Large\sc}
+\subsectionfont{\sc}
+\usepackage[margin=1 in]{geometry}
+
+\newcommand{\bluebox}[1]{
+  \begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,boxrule=0.5pt,boxsep=0pt,left=6pt,right=16pt,top=4pt,bottom=4pt]
+  #1
+  \end{tcolorbox}   
+}
+
+\newcommand{\redbox}[1]{
+  \begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,boxrule=0.5pt,boxsep=0pt,left=6pt,right=16pt,top=4pt,bottom=4pt]
+  #1
+  \end{tcolorbox}
+} 
+
+\newcommand{\greenbox}[1]{
+  \begin{tcolorbox}[colback=green!5!white,colframe=red!75!black,boxrule=0.5pt,boxsep=0pt,left=6pt,right=16pt,top=4pt,bottom=4pt]
+  #1
+  \end{tcolorbox}
+} 
+
+\begin{document}
+\noindent
+\textsc{\Large Numerical analysis: Project 2}\\
+Pratyush Sudhakar
+\vspace{0.4cm}
+\hrule
+\noindent
+
+\subsection*{A simple model}
+
+For the purpose of this problem, we are going to consider $N$ atoms in three dimensional Euclidean space and try to find energy minimizing configurations. A common model for the interaction of neutral atoms is the so-called Lennard-Jones potential. Specifically, given two atomic locations $x_i$ and $x_j$ in $\mathbb{R}^3$ we define $r_{ij} = \|x_i-x_j\|_2$ and the potential between atoms as 
+\[
+V_{ij} = \frac{1}{r^{12}} - \frac{2}{r^6}.
+\]
+Note that there are several parameters in this model that define the optimal distance between two atoms, and the optimal energy. Here we have simply set those coefficients for you.
+\\
+Now, given $N$ atoms defined by their locations $\{x_i\}_{i=1}^N$ the problem we wish to solve is 
+\[
+\min_{x_1,\ldots,x_N} \sum_{i<j} V_{ij}.
+\]
+However, since $V_{ij}$ is invariant with respect to translation of the set of locations $\{x_i\}_{i=1}^N$ it makes sense to fix the location of one of the atoms to $(0, 0, 0)^T.$ Therefore, we assume $x_1 = (0, 0, 0)^T$ and seek to find local minima (ideally the global minima) of
+\begin{equation}
+\min_{x_2,\ldots,x_N} \sum_{i=1}^{N-1}\sum_{j=i+1}^{N} V_{ij},
+\label{eqn:1}
+\end{equation}
+where $V_{1j}$ represents the interactions with the fixed atom at position $x_1.$ This is now an optimization problem in $3(N-1)$ variables.
+
+\subsection*{For this project}
+There are two concrete tasks for this project and one open ended one. In particular, you must implement two methods for solving~\eqref{eqn:1}. One should be gradient descent and the other can be either Newton's method or a Quasi-Newton method. Your implementations need to include a line search using sensible conditions and reasonable convergence criteria. Using these implementations you should complete the following tasks. Your writeup should be structured as a report with narrative flow through what you have done for the project while addressing the tasks along the way---each within a separate section. A portion of your grade will come from the quality of the writeup and how you effectively convey your arguments and answer the following questions.
+
+\bluebox{
+\paragraph{Question 1:} Which optimization algorithms did you implement? Describe your choices for the line search and stopping criteria.
+}
+
+\bluebox{
+\paragraph{Question 2:} For 2 and 3 atoms find globally optimal configurations using your implementations (discuss/illustrate what the configurations are). Argue why you believe you have found a global optima in this case. In addition, is the global minimizer you found unique? Discuss why or why not.
+}
+
+\bluebox{
+\paragraph{Question 3:} Illustrate the order/rate of convergence both your algorithms achieve for 3 atoms when finding the aforementioned minimizer. Do they match what you expect?
+}
+
+\bluebox{
+\paragraph{Goal 1:} Explore computing minimal configurations with more than 3 atoms (you must try and discuss experiments with at least 5 atoms, how far you go beyond that is up to you) to see what you can find and how well your implementations perform. Discuss your findings, what you observe about this problem, and where some of the difficulties arise. (This is deliberately open ended, tell us what you learn in your exploration.)
+}
+
+
+
+\end{document}
